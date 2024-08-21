@@ -58,6 +58,20 @@ func (m *mongoRepository) FindOne(ctx context.Context, id string) (*domain.User,
 	return &user, nil
 }
 
+func (m *mongoRepository) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
+	var (
+		user domain.User
+		err  error
+	)
+
+	err = m.Collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		return &user, err
+	}
+
+	return &user, nil
+}
+
 func (m *mongoRepository) GetAllWithPage(ctx context.Context, rp int64, p int64, filter interface{}, setsort interface{}) ([]domain.User, int64, error) {
 
 	var (
@@ -68,12 +82,11 @@ func (m *mongoRepository) GetAllWithPage(ctx context.Context, rp int64, p int64,
 
 	skip = (p * rp) - rp
 
-    
-    opts= options.Find().SetLimit(rp).SetSkip(skip)
+	opts = options.Find().SetLimit(rp).SetSkip(skip)
 
 	if setsort != nil {
 		opts.SetSort(setsort)
-	} 
+	}
 
 	cursor, err := m.Collection.Find(
 		ctx,
@@ -113,7 +126,7 @@ func (m *mongoRepository) UpdateOne(ctx context.Context, user *domain.User, id s
 	filter := bson.M{"_id": idHex}
 	update := bson.M{"$set": bson.M{
 		"name":       user.Name,
-		"username":   user.Username,
+		"email":      user.Email,
 		"password":   user.Password,
 		"updated_at": time.Now(),
 	}}
@@ -130,14 +143,14 @@ func (m *mongoRepository) UpdateOne(ctx context.Context, user *domain.User, id s
 	return user, nil
 }
 
-func (m *mongoRepository) GetByCredential(ctx context.Context, username string, password string) (*domain.User, error) {
+func (m *mongoRepository) GetByCredential(ctx context.Context, email string, password string) (*domain.User, error) {
 	var (
 		user domain.User
 		err  error
 	)
 
 	credential := bson.M{
-		"username": username,
+		"email":    email,
 		"password": password,
 	}
 

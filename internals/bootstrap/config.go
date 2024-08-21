@@ -11,7 +11,7 @@ type Config struct {
 	ServerAddress          string `mapstructure:"SERVER_ADDRESS"`
 	ContextTimeout         int    `mapstructure:"CONTEXT_TIMEOUT"`
 	MongoURI               string `mapstructure:"MONGO_URI"`
-	DBname              string `mapstructure:"DB_NAME"`
+	DBname                 string `mapstructure:"DB_NAME"`
 	AccessTokenExpiryHour  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
 	RefreshTokenExpiryHour int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
 	AccessTokenSecret      string `mapstructure:"ACCESS_TOKEN_SECRET"`
