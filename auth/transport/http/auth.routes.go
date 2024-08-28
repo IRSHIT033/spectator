@@ -1,24 +1,24 @@
 package http
 
 import (
-	//"fmt"
 	"net/http"
-	"os"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"spectator.main/domain"
+	"spectator.main/internals/bootstrap"
 )
 
 type AuthHandler struct {
 	AuthUsecase domain.AuthUsecase
+	config      *bootstrap.Config
 }
 
-func NewAuthHandler(r *gin.RouterGroup, uu domain.AuthUsecase) {
+func NewAuthHandler(cfg *bootstrap.Config, r *gin.RouterGroup, uu domain.AuthUsecase) {
 	handler := &AuthHandler{
 		AuthUsecase: uu,
+		config:      cfg,
 	}
 	r.POST("/auth/signup", handler.SignUp)
 	r.POST("/auth/login", handler.Login)
@@ -43,21 +43,19 @@ func (ah *AuthHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	secret_key := os.Getenv("SECRET_KEY")
-	expiry_time := os.Getenv("EXPIRY_TIME")
-	expiry, _ := strconv.Atoi(expiry_time)
-	// if err != nil {
-	// 	ctx.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
-	// 	return
-	// }
+	access_token_secret := ah.config.AccessTokenSecret
+	access_token_expiry := ah.config.AccessTokenExpiryHour
 
-	accessToken, err := ah.AuthUsecase.CreateAccessToken(user, secret_key, expiry)
+	accessToken, err := ah.AuthUsecase.CreateAccessToken(user, access_token_secret, access_token_expiry)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	refreshToken, err := ah.AuthUsecase.CreateRefreshToken(user, secret_key, expiry)
+	refresh_token_secret := ah.config.RefreshTokenSecret
+	refresh_token_expiry := ah.config.RefreshTokenExpiryHour
+
+	refreshToken, err := ah.AuthUsecase.CreateRefreshToken(user, refresh_token_secret, refresh_token_expiry)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return
@@ -112,16 +110,19 @@ func (ah *AuthHandler) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	secret_key := os.Getenv("SECRET_KEY")
-	expiry_time := os.Getenv("EXPIRY_TIME")
-	expiry, _ := strconv.Atoi(expiry_time)
-	accessToken, err := ah.AuthUsecase.CreateAccessToken(&user, secret_key, expiry)
+	access_token_secret := ah.config.AccessTokenSecret
+	access_token_expiry := ah.config.AccessTokenExpiryHour
+
+	accessToken, err := ah.AuthUsecase.CreateAccessToken(&user, access_token_secret, access_token_expiry)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	refreshToken, err := ah.AuthUsecase.CreateRefreshToken(&user, secret_key, expiry)
+	refresh_token_secret := ah.config.RefreshTokenSecret
+	refresh_token_expiry := ah.config.RefreshTokenExpiryHour
+
+	refreshToken, err := ah.AuthUsecase.CreateRefreshToken(&user, refresh_token_secret, refresh_token_expiry)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return

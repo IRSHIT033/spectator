@@ -75,4 +75,3 @@ func (user *userUsecase) UpdateOne(c context.Context, m *domain.User, id string)
 
 	return res, nil
 }
-
