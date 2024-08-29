@@ -55,12 +55,12 @@ func (h *ConfigHandler) AddSiteConfig(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	res, err := h.ConfigUsecase.AddSiteConfig(c, &siteConfig, c.Param("config_id"))
+	err := h.ConfigUsecase.AddSiteConfig(c, &siteConfig, c.Param("config_id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, res)
+	c.JSON(http.StatusCreated, gin.H{"message": "Site config added successfully"})
 }
 
 func (h *ConfigHandler) RemoveSiteConfig(c *gin.Context) {

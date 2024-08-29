@@ -36,7 +36,7 @@ type ConfigRepository interface {
 	UpdateSiteConfig(ctx context.Context, site_config *SiteConfig, id string) error
 	RemoveSiteConfig(ctx context.Context, site_url string, id string) error
 	GetByUserID(ctx context.Context, userID string) (*ConfigDetails, error)
-	AddSiteConfig(ctx context.Context, site_config *SiteConfig, id string) (*ConfigDetails, error)
+	AddSiteConfig(ctx context.Context, site_config *SiteConfig, id string) error
 }
 
 type ConfigUsecase interface {
@@ -44,5 +44,5 @@ type ConfigUsecase interface {
 	UpdateSiteConfig(ctx context.Context, site_config *SiteConfig, id string) error
 	RemoveSiteConfig(ctx context.Context, site_url string, id string) error
 	GetByUserID(ctx context.Context, userID string) (*ConfigDetails, error)
-	AddSiteConfig(ctx context.Context, site_config *SiteConfig, id string) (*ConfigDetails, error)
+	AddSiteConfig(ctx context.Context, site_config *SiteConfig, id string) error
 }

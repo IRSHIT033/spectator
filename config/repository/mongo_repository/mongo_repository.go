@@ -57,15 +57,14 @@ func (m *mongoRepository) GetByUserID(ctx context.Context, userID string) (*doma
 	return &config, nil
 }
 
-func (m *mongoRepository) AddSiteConfig(ctx context.Context, site_config *domain.SiteConfig, id string) (*domain.ConfigDetails, error) {
+func (m *mongoRepository) AddSiteConfig(ctx context.Context, site_config *domain.SiteConfig, id string) error {
 	var (
-		err    error
-		config domain.ConfigDetails
+		err error
 	)
 
 	idHex, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return &config, err
+		return err
 	}
 
 	filter := bson.M{"_id": idHex}
@@ -78,11 +77,11 @@ func (m *mongoRepository) AddSiteConfig(ctx context.Context, site_config *domain
 
 	_, err = m.Collection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return &config, err
+		return err
 
 	}
 
-	return &config, nil
+	return nil
 }
 
 func (m *mongoRepository) RemoveSiteConfig(ctx context.Context, site_url string, id string) error {

@@ -58,17 +58,17 @@ func (c *configUsecase) GetByUserID(ctx context.Context, userID string) (*domain
 	return res, nil
 }
 
-func (c *configUsecase) AddSiteConfig(ctx context.Context, site_config *domain.SiteConfig, id string) (*domain.ConfigDetails, error) {
+func (c *configUsecase) AddSiteConfig(ctx context.Context, site_config *domain.SiteConfig, id string) error {
 
 	ctx, cancel := context.WithTimeout(ctx, c.contextTimeout)
 	defer cancel()
 
-	res, err := c.configRepo.AddSiteConfig(ctx, site_config, id)
+	err := c.configRepo.AddSiteConfig(ctx, site_config, id)
 	if err != nil {
-		return res, err
+		return err
 	}
 
-	return res, nil
+	return nil
 }
 
 func (c *configUsecase) RemoveSiteConfig(ctx context.Context, site_url string, id string) error {
