@@ -2,24 +2,28 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"spectator.main/domain"
+	"spectator.main/internals/rabbitmq"
 )
 
 type configUsecase struct {
 	configRepo     domain.ConfigRepository
 	userRepo       domain.UserRepository
 	contextTimeout time.Duration
+	amqpPublisher  rabbitmq.MQPublisher
 }
 
-func NewConfigUsecase(c domain.ConfigRepository, u domain.UserRepository, to time.Duration) domain.ConfigUsecase {
+func NewConfigUsecase(c domain.ConfigRepository, u domain.UserRepository, to time.Duration, amqpPublisher rabbitmq.MQPublisher) domain.ConfigUsecase {
 	return &configUsecase{
 		configRepo:     c,
 		userRepo:       u,
 		contextTimeout: to,
+		amqpPublisher:  amqpPublisher,
 	}
 }
 
@@ -38,6 +42,16 @@ func (c *configUsecase) InsertOne(ctx context.Context, config *domain.ConfigDeta
 	config.UpdatedAt = time.Now()
 
 	res, err := c.configRepo.InsertOne(ctx, config)
+	if err != nil {
+		return res, err
+	}
+
+	configJson, err := json.Marshal(res)
+	if err != nil {
+		return res, err
+	}
+
+	err = c.amqpPublisher.Publish(configJson)
 	if err != nil {
 		return res, err
 	}

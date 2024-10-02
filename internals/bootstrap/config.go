@@ -16,6 +16,8 @@ type Config struct {
 	RefreshTokenExpiryHour int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
 	AccessTokenSecret      string `mapstructure:"ACCESS_TOKEN_SECRET"`
 	RefreshTokenSecret     string `mapstructure:"REFRESH_TOKEN_SECRET"`
+	RabbitMQURI            string `mapstructure:"RABBITMQ_URI"`
+	RabbitMQQueueName      string `mapstructure:"RABBITMQ_QUEUE_NAME"`
 }
 
 func InitConfig() *Config {

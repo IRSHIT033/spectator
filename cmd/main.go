@@ -29,6 +29,8 @@ func main() {
 
 	database := app.Mongo.Database(config.DBname)
 
+	rabbitMQ := app.RabbitMQ
+
 	ginRouter := router.Group("api/v1")
 
 	userRepo := _userRepo.NewMongoRepository(database)
@@ -38,7 +40,7 @@ func main() {
 	_authHandler.NewAuthHandler(config, ginRouter, authUseCase)
 
 	configRepo := _configRepo.NewMongoRepository(database)
-	configUseCase := _configUsecase.NewConfigUsecase(configRepo, userRepo, timeoutContext)
+	configUseCase := _configUsecase.NewConfigUsecase(configRepo, userRepo, timeoutContext, rabbitMQ)
 	_configHandler.NewConfigHandler(config, ginRouter, configUseCase)
 
 	router.Run(":8080")

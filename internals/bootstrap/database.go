@@ -14,7 +14,7 @@ func NewMongoDatabase(config *Config) mongo.Client {
 
 	MongoURI := config.MongoURI
 
-	client, err := mongo.NewClient(ctx,MongoURI)
+	client, err := mongo.NewClient(ctx, MongoURI)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -23,7 +23,7 @@ func NewMongoDatabase(config *Config) mongo.Client {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	log.Println("Connected to MongoDB")
 	return client
 }
 
